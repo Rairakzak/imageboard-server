@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const router = new Router();
 const { image } = require("../models");
+const { toData } = require("../auth/jwt");
 
 router.post("/", async (req, res, next) => {
   try {
@@ -15,15 +16,22 @@ router.post("/", async (req, res, next) => {
     next(e);
   }
 });
-
-router.get("/", async (request, res, next) => {
-  try {
-    const allImages = await image.findAll();
-
-    res.send(allImages);
-  } catch (e) {
-    next(e);
+router.get("/auth/messy", async (req, res, next) => {
+  const auth =
+    req.headers.authorization && req.headers.authorization.split(" ");
+  if (auth && auth[0] === "Bearer" && auth[1]) {
+    try {
+      const data = toData(auth[1]);
+      const allImages = await Image.findAll();
+      res.json(allImages);
+    } catch (e) {
+      res.status(400).send("Invalid JWT token");
+    }
+  } else {
+    res.status(401).send({
+      message: "Please supply some valid credentials",
+    });
   }
 });
+
 module.exports = router;
-// https://viralviralvideos.com/wp-content/uploads/GIF/2015/06/Yes-I-did-it-GIF_3.gif
