@@ -16,13 +16,13 @@ router.post("/", async (req, res, next) => {
     next(e);
   }
 });
-router.get("/auth/messy", async (req, res, next) => {
+router.get("/messy", async (req, res, next) => {
   const auth =
     req.headers.authorization && req.headers.authorization.split(" ");
   if (auth && auth[0] === "Bearer" && auth[1]) {
     try {
       const data = toData(auth[1]);
-      const allImages = await Image.findAll();
+      const allImages = await image.findAll();
       res.json(allImages);
     } catch (e) {
       res.status(400).send("Invalid JWT token");
